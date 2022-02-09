@@ -56,7 +56,11 @@ namespace Anamnesis.GUI.Windows
 			// early out
 			Process[] processes = GetTargetProcesses();
 			if (processes.Length == 1)
-				return processes[0];
+			{
+				Option option = new Option(processes[0]);
+				if (!option.Locked)
+					return processes[0];
+			}
 
 			Dialog dlg = new Dialog();
 			ProcessSelector proc = new ProcessSelector();
@@ -168,9 +172,17 @@ namespace Anamnesis.GUI.Windows
 				if (processes.Length == 1)
 				{
 					await Dispatch.MainThread();
-					this.Selected = processes[0];
-					this.window?.Close();
-					return;
+					Option option = new Option(processes[0]);
+					if (!option.Locked)
+					{
+						this.Selected = processes[0];
+						this.window?.Close();
+						return;
+					}
+					else
+					{
+						this.ManualExpander.IsExpanded = true;
+					}
 				}
 				else if (processes.Length > 1)
 				{
